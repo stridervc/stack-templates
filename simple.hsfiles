@@ -119,3 +119,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .stack-work/
 *~
 *.lock
+
+{-# START_FILE hie.yaml #-}
+cradle:
+  stack:
