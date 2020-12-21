@@ -119,6 +119,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .stack-work/
 *~
 *.lock
+*.swp
 
 {-# START_FILE hie.yaml #-}
 cradle:
