@@ -25,8 +25,9 @@ dependencies:
 
 library:
   source-dirs: src
-#  dependencies:
-#  - text
+  dependencies:
+  - brick
+  - vty
 
 executables:
   {{name}}:
@@ -38,7 +39,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - {{name}}
-#   - text
+    - brick
 
 tests:
   {{name}}-test:
@@ -59,21 +60,70 @@ main = defaultMain
 main :: IO ()
 main = putStrLn "Test suite not yet implemented"
 
-{-# START_FILE src/Lib.hs #-}
-module Lib
-    ( someFunc
-    ) where
+{-# START_FILE src/AppUI.hs #-}
+{-# Language OverloadedStrings #-}
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+module AppUI
+  ( defaultUIState
+  , defaultApp
+  ) where
+
+import Brick.Main
+import Brick.Types
+import Brick.Util (on)
+import Brick.Widgets.Core
+
+import qualified Graphics.Vty as V
+import qualified Brick.AttrMap as A
+
+data UIEvent  = PlaceHolderEvent deriving (Eq, Show)
+type UINames  = ()
+
+newtype UIState = UIState
+  { placeHolderState  :: Int
+  }
+
+defaultUIState :: UIState
+defaultUIState = UIState
+  { placeHolderState  = 0
+  }
+
+defaultApp :: App UIState UIEvent UINames
+defaultApp = App
+  { appDraw         = drawUI
+  , appChooseCursor = \_ _ -> Nothing
+  , appHandleEvent  = eventHandler
+  , appStartEvent   = return
+  , appAttrMap      = attrMap
+  }
+
+drawUI :: UIState -> [ Widget UINames ]
+drawUI state = [ str "ACE!" ]
+
+eventHandler :: UIState -> BrickEvent UINames UIEvent -> EventM UINames (Next UIState)
+eventHandler state (VtyEvent e)
+  | e == V.EvKey V.KEsc        [] = halt state
+  | e == V.EvKey (V.KChar 'q') [] = halt state
+  | otherwise                     = continue state
+
+eventHandler state _              = continue state
+
+attrMap :: UIState -> A.AttrMap
+attrMap state = A.attrMap V.defAttr
+  [ ("text",  V.white `on` V.black)
+  ]
 
 {-# START_FILE app/Main.hs #-}
 module Main where
 
-import Lib
+import AppUI
+
+import Brick.Main
 
 main :: IO ()
-main = someFunc
+main = do
+  defaultMain defaultApp defaultUIState
+  return ()
 
 {-# START_FILE README.md #-}
 # {{name}}
