@@ -98,7 +98,7 @@ defaultApp = App
   }
 
 drawUI :: UIState -> [ Widget UINames ]
-drawUI state = [ str "ACE!" ]
+drawUI state = [ str "Hello Brick" ]
 
 eventHandler :: UIState -> BrickEvent UINames UIEvent -> EventM UINames (Next UIState)
 eventHandler state (VtyEvent e)
